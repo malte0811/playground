@@ -8,9 +8,11 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    env:
+      release: ${{ github.event_name == 'create' }}
     steps:
       - name: Run in all cases
         run: echo General
       - name: Run for releases
-        if: ${{ github.event_name == 'create' }}
+        if: env.release == 'true'
         run: echo Release
