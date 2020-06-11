@@ -1,0 +1,16 @@
+name: Test
+on:
+  push:
+  create:
+    tags:
+      - 'v*'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run in all cases
+        run: echo General
+      - name: Run for releases
+        if: ${{ github.event_name == 'create' }}
+        run: echo Release
