@@ -1,18 +1,31 @@
 name: Test
 on:
   push:
-  create:
-    tags:
-      - 'v*'
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    env:
-      release: ${{ github.event_name == 'create' }}
     steps:
-      - name: Run in all cases
-        run: echo General
-      - name: Run for releases
-        if: env.release == 'true'
-        run: echo Release
+      - name: Clone IE
+        run: git clone https://github.com/BluSunrize/ImmersiveEngineering .
+      - name: Install timelimit
+        run: sudo apt install timelimit
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Setup OpenGL
+        uses: openrndr/setup-opengl@v1
+      - name: Install GLFW
+        run: sudo apt install libglfw3
+      - name: Run unit tests
+        run: ./gradlew test
+      - name: Run client
+        run: timelimit -t 180 -s 9 ./gradlew runClient || true
+      - name: Kill Java
+        run: killall java
+      - name: Upload log
+        uses: actions/upload-artifact@v2
+        with:
+          path: run/logs/debug.log
+          name: debug.log
